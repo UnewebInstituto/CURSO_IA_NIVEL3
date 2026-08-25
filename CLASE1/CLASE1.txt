@@ -1,0 +1,38 @@
+Kaggle:
+Adquirida por Google en 2017, **Kaggle** es la comunidad y plataforma global más grande para la ciencia de datos y el aprendizaje automático. Funciona como un ecosistema completo para aprender, experimentar y construir portafolios profesionales.
+
+---
+
+### Componentes y Características Principales
+
+* **Gran Catálogo de Datasets (Kaggle Datasets):** Repositorio masivo y gratuito de conjuntos de datos en diversos formatos (`.csv`, `.json`, imágenes, audio, etc.), creados tanto por empresas como por la comunidad.
+* **Entorno de Cómputo Nube (Kaggle Notebooks / Kernels):** Entorno ejecutable basado en Jupyter Notebooks con acceso gratuito a recursos de cómputo (CPU, GPU de alto rendimiento y TPU) con las principales librerías de Python y R preinstaladas.
+* **Competencias de Machine Learning (Kaggle Competitions):** El núcleo original de la plataforma. Empresas e instituciones publican problemas reales con premios en efectivo (a menudo decenas o cientos de miles de dólares), donde los participantes compiten por construir el modelo de mayor precisión.
+* **Repositorio de Modelos (Kaggle Models):** Un espacio centralizado donde se alojan, prueban y descargan modelos preentrenados de código abierto (como modelos de visión por computadora, NLP o Large Language Models).
+* **Comunidad y Discusiones (Kaggle Discussions):** Foros muy activos para debatir estrategias, pedir ayuda con errores de código, compartir explicaciones paso a paso y hacer *networking* con expertos de la industria.
+* **Kaggle Learn:** Microcursos interactivos y gratuitos enfocados en habilidades clave (Python, Pandas, Machine Learning, Deep Learning, SQL y LLMs) con ejercicios prácticos directamente en la nube.
+
+---
+
+### Sistema de Gamificación y Niveles
+
+Kaggle cuenta con una estructura de reputación basada en medallas y rangos (*Grandmaster*, *Master*, *Expert*, *Contributor*, *Novice*) que evalúa las contribuciones en 4 categorías independientes:
+
+1. **Competitions:** Desempeño y posición en la tabla de clasificación (*leaderboard*).
+2. **Datasets:** Calidad y popularidad de los datos compartidos.
+3. **Notebooks:** Valor educativo y técnico del código hecho público.
+4. **Discussion:** Participación útil y aportes en los foros de la comunidad.
+
+Claude IA: Redacción de documentos (estilo literario) y la construcción de código de programación.
+
+Gemini IA: Multiproposito.
+
+¿Cuál es la regla para definir un prompt a través de cualquier IA?
+ROL
+TAREA
+FORMATO
+CONTEXTO
+RESTRICCIÓN
+
+
+https://gamma.app/docs/Untitled-d2880zrtisp5ebl

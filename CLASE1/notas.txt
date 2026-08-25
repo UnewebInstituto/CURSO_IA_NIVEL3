@@ -1,0 +1,65 @@
+Para realizar la **Práctica 1** en Kaggle, existen varios conjuntos de datos (datasets) públicos listos para descargar en formato CSV. Como la práctica requiere tomar **100 reseñas de clientes**, solo debes descargar alguno de los siguientes datasets y filtrar o seleccionar 100 filas para subirlas a MonkeyLearn:
+
+**Opción 1: Reseñas de Empresas y Clientes (Ideal para contexto de negocio)**
+
+* **Nombre en Kaggle:** `Sentiment Analysis - Company Reviews`
+* **Contenido:** Contiene miles de reseñas reales de clientes sobre servicios y empresas recopiladas de portales como Trustpilot, con texto y calificación.
+* **Uso para la práctica:** Descargas el archivo CSV, seleccionas las primeras 100 filas con la columna de texto y las procesas en MonkeyLearn.
+
+
+
+**Opción 2: Reseñas de Películas en Español (Listas para procesar)**
+
+* **Nombre en Kaggle:** `IMDB Dataset of 50K Movie Reviews (Spanish)` (por Luis Diego FV)
+* **Contenido:** Incluye comentarios clasificados por opinión positiva y negativa traduciendo la base clásica de IMDB al español.
+* **Uso para la práctica:** Puedes copiar la columna `review_es` de 100 filas y pegarla o subirla como CSV directamente en el clasificador de MonkeyLearn.
+
+
+
+**Opción 3: Comentarios de Redes Sociales en Español**
+
+* **Nombre en Kaggle:** `Twitter Sentiment Analysis in Spanish Tweets` (por Philipsanm)
+* **Contenido:** Publicaciones cortas en español etiquetadas con distintas emociones y opiniones.
+* **Uso para la práctica:** Funciona bien para simular comentarios breves sobre productos o servicios en redes sociales.
+
+**Paso a paso recomendado para la Práctica 1 con Kaggle:**
+
+1. Inicia sesión en Kaggle y busca cualquiera de los datasets listados.
+2. Descarga el archivo `.csv` a tu laptop.
+
+
+3. Abre el archivo en Excel o Google Sheets, toma **exactamente 100 filas** de la columna de texto y guárdalo como `100_reseñas_clientes.csv`.
+4. Cárgalo en MonkeyLearn para obtener la clasificación de sentimiento.
+
+********************
+********************
+
+Para reemplazar MonkeyLearn sin tener que programar ni usar código, estas alternativas gratuitas permiten clasificar el sentimiento de las 100 reseñas:
+
+**Alternativas recomendadas**
+
+* **Claude / ChatGPT / Gemini (Procesamiento directo por Prompts):**
+Puedes subir el CSV directamente al chat o pegar el bloque de 100 reseñas y pedirle mediante un prompt de clasificación:
+> *"Clasifica cada una de las siguientes 100 reseñas en Positivo, Negativo o Neutro. Devuélveme el resultado en una tabla CSV y genera el resumen porcentual de cada categoría."*
+
+
+* **Google Sheets + Extensión de IA (p. ej., GPT for Sheets o Gemini):**
+Cargas tus 100 reseñas en una columna de Google Sheets y usas una fórmula de la extensión para procesar fila por fila. Te devuelve la etiqueta directamente en la celda contigua sin salir de la hoja de cálculo.
+
+
+* **Akkio (Plataforma No-Code de ML):**
+Permite subir el CSV con las 100 filas, seleccionar la columna de texto y pedirle que clasifique el sentimiento en cuestión de segundos utilizando sus modelos preentrenados en una interfaz visual muy intuitiva.
+* **Mendel.ai / Obviously AI:**
+Plataformas *no-code* orientadas a análisis predictivo y de texto donde subes el dataset y seleccionas la tarea de *Text Classification / Sentiment Analysis* directamente en un menú interactivo.
+
+
+
+**Adaptación de la Práctica 1**
+
+1. Subes las 100 reseñas obtenidas de Kaggle a cualquiera de estas plataformas o al mismo Claude.
+
+
+2. Obtienes el conteo y porcentaje de cada sentimiento (Positivo / Negativo / Neutro).
+
+
+3. Con el porcentaje obtenido, le pides a Claude que redacte el **párrafo ejecutivo de 5-7 líneas** interpretando los datos y proponiendo la acción concreta para cumplir con el entregable del curso.

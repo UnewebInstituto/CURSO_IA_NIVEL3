@@ -1,0 +1,17 @@
+Entrenar y aplicar un clasificador de sentimientos (positivo / negativo / neutro) sobre un conjunto real o 
+simulado de 100 reseñas de clientes, sin escribir código, usando MonkeyLearn.
+
+MonkeyLearn: Requiere de un pago de licencia.
+
+Gemini:
+Asume el rol de experto de IA, me encuentro en la situación de que MonkeyLearn, ya no posee plan gratuito. Voy a utilizar un dataset de Kaggle, con la finalidad de usar Gemini, para el análisis de sentimientos de un dataset que voy a descargar.
+
+
+A partir del dataset obtenido, ejecuta el siguiente prompt:
+
+Clasifica cada una de las siguientes 100 reseñas en Positivo, Negativo o Neutro. Devuélveme el resultado en una tabla CSV y genera el resumen porcentual de cada categoría.
+
+
+Analiza la 
+tendencia de ventas mensual y proyecta los próximos 3 meses. Explica en qué te basas y qué tan confiable 
+es la proyección
