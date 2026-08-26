@@ -1,0 +1,755 @@
+```python
+import pandas as pd
+
+# Load the excel file to inspect sheet names
+filepath = 'Adidas US Sales Datasets.xlsx'
+xls = pd.ExcelFile(filepath)
+print("Sheet names:", xls.sheet_names)
+
+# Read the first sheet or main dataset
+df = pd.read_excel(filepath)
+print("Columns:", df.columns.tolist())
+print("\nShape:", df.shape)
+print("\nFirst few rows:")
+print(df.head())
+print("\nInfo:")
+print(df.info())
+
+
+```
+
+```text
+Sheet names: ['Data Sales Adidas']
+Columns: ['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'Unnamed: 3', 'Unnamed: 4', 'Unnamed: 5', 'Unnamed: 6', 'Unnamed: 7', 'Unnamed: 8', 'Unnamed: 9', 'Unnamed: 10', 'Unnamed: 11', 'Unnamed: 12', 'Unnamed: 13']
+
+Shape: (9652, 14)
+
+First few rows:
+   Unnamed: 0   Unnamed: 1             Unnamed: 2           Unnamed: 3 Unnamed: 4 Unnamed: 5 Unnamed: 6             Unnamed: 7      Unnamed: 8  Unnamed: 9  Unnamed: 10       Unnamed: 11       Unnamed: 12   Unnamed: 13
+0         NaN          NaN  Adidas Sales Database                  NaN        NaN        NaN        NaN                    NaN             NaN         NaN          NaN               NaN               NaN           NaN
+1         NaN          NaN                    NaN                  NaN        NaN        NaN        NaN                    NaN             NaN         NaN          NaN               NaN               NaN           NaN
+2         NaN          NaN                    NaN                  NaN        NaN        NaN        NaN                    NaN             NaN         NaN          NaN               NaN               NaN           NaN
+3         NaN     Retailer            Retailer ID         Invoice Date     Region      State       City                Product  Price per Unit  Units Sold  Total Sales  Operating Profit  Operating Margin  Sales Method
+4         NaN  Foot Locker                1185732  2020-01-01 00:00:00  Northeast   New York   New York  Men's Street Footwear              50        1200       600000            300000               0.5      In-store
+
+Info:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 9652 entries, 0 to 9651
+Data columns (total 14 columns):
+ #   Column       Non-Null Count  Dtype  
+---  ------       --------------  -----  
+ 0   Unnamed: 0   0 non-null      float64
+ 1   Unnamed: 1   9649 non-null   object 
+ 2   Unnamed: 2   9650 non-null   object 
+ 3   Unnamed: 3   9649 non-null   object 
+ 4   Unnamed: 4   9649 non-null   object 
+ 5   Unnamed: 5   9649 non-null   object 
+ 6   Unnamed: 6   9649 non-null   object 
+ 7   Unnamed: 7   9649 non-null   object 
+ 8   Unnamed: 8   9649 non-null   object 
+ 9   Unnamed: 9   9649 non-null   object 
+ 10  Unnamed: 10  9649 non-null   object 
+ 11  Unnamed: 11  9649 non-null   object 
+ 12  Unnamed: 12  9649 non-null   object 
+ 13  Unnamed: 13  9649 non-null   object 
+dtypes: float64(1), object(13)
+memory usage: 1.0+ MB
+None
+
+
+```
+
+```python
+# Clean dataset structure by setting proper headers
+df_clean = pd.read_excel(filepath, skiprows=4)
+# Drop fully empty column if present
+df_clean = df_clean.dropna(how='all', axis=1)
+
+print("Cleaned Columns:", df_clean.columns.tolist())
+print("Cleaned Shape:", df_clean.shape)
+
+# Check null values
+print("\nNull counts:")
+print(df_clean.isnull().sum())
+
+# Date range
+df_clean['Invoice Date'] = pd.to_datetime(df_clean['Invoice Date'])
+min_date = df_clean['Invoice Date'].min()
+max_date = df_clean['Invoice Date'].max()
+print(f"\nDate Range: {min_date} to {max_date}")
+
+# Unique categories across categorical columns
+categorical_cols = ['Retailer', 'Region', 'State', 'City', 'Product', 'Sales Method']
+print("\nUnique values in categorical columns:")
+for col in categorical_cols:
+    print(f"--- {col} ({df_clean[col].nunique()} únicos) ---")
+    print(df_clean[col].unique())
+
+# Numeric checks / inconsistencies
+numeric_cols = ['Price per Unit', 'Units Sold', 'Total Sales', 'Operating Profit', 'Operating Margin']
+for col in numeric_cols:
+    df_clean[col] = pd.to_numeric(df_clean[col], errors='coerce')
+
+print("\nNumeric Summary:")
+print(df_clean[numeric_cols].describe())
+
+# Check for calculation inconsistencies: Total Sales == Price per Unit * Units Sold
+calculated_sales = df_clean['Price per Unit'] * df_clean['Units Sold']
+sales_diff = (df_clean['Total Sales'] - calculated_sales).abs()
+inconsistent_sales = df_clean[sales_diff > 1] # allowing minor rounding if any
+
+print(f"\nFilas con discrepancia entre Price * Units y Total Sales: {len(inconsistent_sales)}")
+
+# Check Operating Margin consistency: Operating Profit / Total Sales
+calc_margin = df_clean['Operating Profit'] / df_clean['Total Sales']
+margin_diff = (df_clean['Operating Margin'] - calc_margin).abs()
+inconsistent_margin = df_clean[margin_diff > 0.05]
+print(f"Filas con discrepancia en Operating Margin: {len(inconsistent_margin)}")
+
+
+
+```
+
+```text
+Cleaned Columns: ['Retailer', 'Retailer ID', 'Invoice Date', 'Region', 'State', 'City', 'Product', 'Price per Unit', 'Units Sold', 'Total Sales', 'Operating Profit', 'Operating Margin', 'Sales Method']
+Cleaned Shape: (9648, 13)
+
+Null counts:
+Retailer            0
+Retailer ID         0
+Invoice Date        0
+Region              0
+State               0
+City                0
+Product             0
+Price per Unit      0
+Units Sold          0
+Total Sales         0
+Operating Profit    0
+Operating Margin    0
+Sales Method        0
+dtype: int64
+
+Date Range: 2020-01-01 00:00:00 to 2021-12-31 00:00:00
+
+Unique values in categorical columns:
+--- Retailer (6 únicos) ---
+['Foot Locker' 'Walmart' 'Sports Direct' 'West Gear' "Kohl's" 'Amazon']
+--- Region (5 únicos) ---
+['Northeast' 'South' 'West' 'Midwest' 'Southeast']
+--- State (50 únicos) ---
+['New York' 'Texas' 'California' 'Illinois' 'Pennsylvania' 'Nevada'
+ 'Colorado' 'Washington' 'Florida' 'Minnesota' 'Montana' 'Tennessee'
+ 'Nebraska' 'Alabama' 'Maine' 'Alaska' 'Hawaii' 'Wyoming' 'Virginia'
+ 'Michigan' 'Missouri' 'Utah' 'Oregon' 'Louisiana' 'Idaho' 'Arizona'
+ 'New Mexico' 'Georgia' 'South Carolina' 'North Carolina' 'Ohio'
+ 'Kentucky' 'Mississippi' 'Arkansas' 'Oklahoma' 'Kansas' 'South Dakota'
+ 'North Dakota' 'Iowa' 'Wisconsin' 'Indiana' 'West Virginia' 'Maryland'
+ 'Delaware' 'New Jersey' 'Connecticut' 'Rhode Island' 'Massachusetts'
+ 'Vermont' 'New Hampshire']
+--- City (52 únicos) ---
+['New York' 'Houston' 'San Francisco' 'Los Angeles' 'Chicago' 'Dallas'
+ 'Philadelphia' 'Las Vegas' 'Denver' 'Seattle' 'Miami' 'Minneapolis'
+ 'Billings' 'Knoxville' 'Omaha' 'Birmingham' 'Portland' 'Anchorage'
+ 'Honolulu' 'Orlando' 'Albany' 'Cheyenne' 'Richmond' 'Detroit' 'St. Louis'
+ 'Salt Lake City' 'New Orleans' 'Boise' 'Phoenix' 'Albuquerque' 'Atlanta'
+ 'Charleston' 'Charlotte' 'Columbus' 'Louisville' 'Jackson' 'Little Rock'
+ 'Oklahoma City' 'Wichita' 'Sioux Falls' 'Fargo' 'Des Moines' 'Milwaukee'
+ 'Indianapolis' 'Baltimore' 'Wilmington' 'Newark' 'Hartford' 'Providence'
+ 'Boston' 'Burlington' 'Manchester']
+--- Product (6 únicos) ---
+["Men's Street Footwear" "Men's Athletic Footwear"
+ "Women's Street Footwear" "Women's Athletic Footwear" "Men's Apparel"
+ "Women's Apparel"]
+--- Sales Method (3 únicos) ---
+['In-store' 'Outlet' 'Online']
+
+Numeric Summary:
+       Price per Unit   Units Sold    Total Sales  Operating Profit  Operating Margin
+count     9648.000000  9648.000000    9648.000000       9648.000000       9648.000000
+mean        45.216625   256.930037   93273.437500      34425.244761          0.422991
+std         14.705397   214.252030  141916.016727      54193.113713          0.097197
+min          7.000000     0.000000       0.000000          0.000000          0.100000
+25%         35.000000   106.000000    4254.500000       1921.752500          0.350000
+50%         45.000000   176.000000    9576.000000       4371.420000          0.410000
+75%         55.000000   350.000000  150000.000000      52062.500000          0.490000
+max        110.000000  1275.000000  825000.000000     390000.000000          0.800000
+
+Filas con discrepancia entre Price * Units y Total Sales: 3886
+Filas con discrepancia en Operating Margin: 0
+
+
+```
+
+```python
+# Inspecting discrepancies in Total Sales vs Price * Units
+df_clean['Calc_Sales'] = df_clean['Price per Unit'] * df_clean['Units Sold']
+df_clean['Sales_Diff'] = df_clean['Total Sales'] - df_clean['Calc_Sales']
+
+inconsistent = df_clean[df_clean['Sales_Diff'].abs() > 1]
+print(inconsistent[['Retailer', 'Sales Method', 'Price per Unit', 'Units Sold', 'Total Sales', 'Calc_Sales', 'Sales_Diff']].head(10))
+
+# See breakdown by Sales Method or Retailer for discrepancies
+print("\nDiscrepancias por método de venta:")
+print(inconsistent['Sales Method'].value_counts())
+
+
+```
+
+```text
+      Retailer Sales Method  Price per Unit  Units Sold  Total Sales  Calc_Sales  Sales_Diff
+0  Foot Locker     In-store            50.0        1200     600000.0     60000.0    540000.0
+1  Foot Locker     In-store            50.0        1000     500000.0     50000.0    450000.0
+2  Foot Locker     In-store            40.0        1000     400000.0     40000.0    360000.0
+3  Foot Locker     In-store            45.0         850     382500.0     38250.0    344250.0
+4  Foot Locker     In-store            60.0         900     540000.0     54000.0    486000.0
+5  Foot Locker     In-store            50.0        1000     500000.0     50000.0    450000.0
+6  Foot Locker     In-store            50.0        1250     625000.0     62500.0    562500.0
+7  Foot Locker       Outlet            50.0         900     450000.0     45000.0    405000.0
+8  Foot Locker       Outlet            40.0         950     380000.0     38000.0    342000.0
+9  Foot Locker       Outlet            45.0         825     371250.0     37125.0    334125.0
+
+Discrepancias por método de venta:
+Sales Method
+In-store    1740
+Outlet      1145
+Online      1001
+Name: count, dtype: int64
+
+
+```
+
+```python
+# Check ratio between Total Sales and Price*Units
+df_clean['Ratio'] = df_clean['Total Sales'] / df_clean['Calc_Sales']
+print(df_clean['Ratio'].value_counts().head(10))
+
+
+```
+
+```text
+Ratio
+1.0     5758
+10.0    3771
+10.0      78
+10.0      37
+Name: count, dtype: int64
+
+
+```
+
+```python
+# Let's inspect rows with ratio 10 vs ratio 1
+ratio_10 = df_clean[df_clean['Ratio'].round(1) == 10.0]
+ratio_1 = df_clean[df_clean['Ratio'].round(1) == 1.0]
+
+print("Ratio 10 sample:")
+print(ratio_10[['Retailer', 'Sales Method', 'Price per Unit', 'Units Sold', 'Total Sales']].head(5))
+
+print("\nRatio 1 sample:")
+print(ratio_1[['Retailer', 'Sales Method', 'Price per Unit', 'Units Sold', 'Total Sales']].head(5))
+
+
+```
+
+```text
+Ratio 10 sample:
+      Retailer Sales Method  Price per Unit  Units Sold  Total Sales
+0  Foot Locker     In-store            50.0        1200     600000.0
+1  Foot Locker     In-store            50.0        1000     500000.0
+2  Foot Locker     In-store            40.0        1000     400000.0
+3  Foot Locker     In-store            45.0         850     382500.0
+4  Foot Locker     In-store            60.0         900     540000.0
+
+Ratio 1 sample:
+         Retailer Sales Method  Price per Unit  Units Sold  Total Sales
+3888  Foot Locker       Online            47.0         336      15792.0
+3889  Foot Locker       Online            47.0         260      12220.0
+3890  Foot Locker       Online            36.0         250       9000.0
+3891  Foot Locker       Online            41.0         247      10127.0
+3892  Foot Locker       Online            55.0         234      12870.0
+
+
+```
+
+**Resumen General del Dataset**
+
+**Estructura y Volumen**
+
+* **Número de filas:** 9,648 registros válidos de transacciones (tras remover las 4 filas de encabezado/título del archivo).
+* **Rango de fechas:** Del 1 de enero de 2020 al 31 de diciembre de 2021.
+
+**Categorías Presentes**
+
+* **Distribuidores / Retailers (6):** Foot Locker, Walmart, Sports Direct, West Gear, Kohl's y Amazon.
+* **Líneas de Producto (6):** Men's Street Footwear, Men's Athletic Footwear, Women's Street Footwear, Women's Athletic Footwear, Men's Apparel y Women's Apparel.
+* **Métodos de Venta (3):** In-store, Outlet y Online.
+* **Cobertura Geográfica:** 5 regiones (Northeast, South, West, Midwest, Southeast), 50 estados y 52 ciudades de EE. UU.
+
+**Valores Nulos e Inconsistencias Detectadas**
+
+* **Valores Nulos:** No se presentan valores nulos dentro de los 9,648 registros de datos.
+* **Inconsistencia de Cálculo (`Total Sales` vs. `Price per Unit` × `Units Sold`):**
+* En **5,758 registros**, la fórmula cuadra perfectamente ($Total\ Sales = Price\ per\ Unit \times Units\ Sold$).
+* En **3,886 registros** (aprox. 40% del dataset), existe un factor de desproporción exacto de 10x entre la venta total registrada y el producto del precio unitario por la cantidad vendida (por ejemplo, 50 USD/unidad × 1,200 unidades da 60,000 USD, pero figura un `Total Sales` de 600,000 USD).
+
+
+* **Consistencia Operativa:** La columna `Operating Margin` mantiene coherencia matemática perfecta en todas las filas con respecto a `Operating Profit / Total Sales`.
+
+```python
+import pandas as pd
+
+filepath = 'Adidas US Sales Datasets.xlsx'
+df = pd.read_excel(filepath, skiprows=4)
+df = df.dropna(how='all', axis=1)
+
+pivot = pd.pivot_table(
+    df,
+    values='Total Sales',
+    index='Region',
+    columns='Retailer',
+    aggfunc='sum',
+    fill_value=0
+)
+
+# Add margins (Totals)
+pivot_with_totals = pd.pivot_table(
+    df,
+    values='Total Sales',
+    index='Region',
+    columns='Retailer',
+    aggfunc='sum',
+    fill_value=0,
+    margins=True,
+    margins_name='Total General'
+)
+
+# Format currency for display
+pd.options.display.float_format = '{:,.2f}'.format
+print(pivot_with_totals)
+
+
+```
+
+```text
+Retailer         Amazon  Foot Locker     Kohl's  Sports Direct   Walmart  West Gear  Total General
+Region                                                                                            
+Midwest        16835873     47987394   22229415       26207191         0   22540586 135,800,459.00
+Northeast      36262590     65326474   14031168       24698097  13712005   32293733 186,324,067.00
+South            409091      9307025    3552055       65258121  33049858   33087031 144,663,181.00
+Southeast      10826333     59669118          0       54178543  21005539   17491703 163,171,236.00
+West           13365025     37804709   62302115       12129045   6791008  137551280 269,943,182.00
+Total General  77698912    220094720  102114753      182470997  74558410  242964333 899,902,125.00
+
+
+```
+
+A continuación se presenta la **tabla dinámica** con el total de ventas (`Total Sales` expresado en USD) desglosado por **Región** y **Retailer**:
+
+| Región | Amazon | Foot Locker | Kohl's | Sports Direct | Walmart | West Gear | Total General |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **Midwest** | $16,835,873 | $47,987,394 | $22,229,415 | $26,207,191 | $0 | $22,540,586 | **$135,800,459** |
+| **Northeast** | $36,262,590 | $65,326,474 | $14,031,168 | $24,698,097 | $13,712,005 | $32,293,733 | **$186,324,067** |
+| **South** | $409,091 | $9,307,025 | $3,552,055 | $65,258,121 | $33,049,858 | $33,087,031 | **$144,663,181** |
+| **Southeast** | $10,826,333 | $59,669,118 | $0 | $54,178,543 | $21,005,539 | $17,491,703 | **$163,171,236** |
+| **West** | $13,365,025 | $37,804,709 | $62,302,115 | $12,129,045 | $6,791,008 | $137,551,280 | **$269,943,182** |
+| **Total General** | **$77,698,912** | **$220,094,720** | **$102,114,753** | **$182,470,997** | **$74,558,410** | **$242,964,333** | **$899,902,125** |
+
+---
+
+### Insights clave:
+
+* **Líder de Región:** La región **West** registra el mayor volumen de ventas con **$269,943,182**, impulsada principalmente por **West Gear** ($137.55M).
+* **Líder de Distribuidores:** **West Gear** ($242.96M) y **Foot Locker** ($220.09M) son los principales generadores de ingresos a nivel general.
+* **Segmentación geográfica:**
+* **Walmart** no registra ventas en la región *Midwest*.
+* **Kohl's** no registra ventas en la región *Southeast*.
+
+```python
+import pandas as pd
+
+filepath = 'Adidas US Sales Datasets.xlsx'
+df = pd.read_excel(filepath, skiprows=4)
+df = df.dropna(how='all', axis=1)
+
+pivot = pd.pivot_table(
+    df,
+    values='Total Sales',
+    index='Region',
+    columns='Retailer',
+    aggfunc='sum',
+    fill_value=0
+)
+
+# Add margins (Totals)
+pivot_with_totals = pd.pivot_table(
+    df,
+    values='Total Sales',
+    index='Region',
+    columns='Retailer',
+    aggfunc='sum',
+    fill_value=0,
+    margins=True,
+    margins_name='Total General'
+)
+
+# Format currency for display
+pd.options.display.float_format = '{:,.2f}'.format
+print(pivot_with_totals)
+
+
+```
+
+```text
+Retailer         Amazon  Foot Locker     Kohl's  Sports Direct   Walmart  West Gear  Total General
+Region                                                                                            
+Midwest        16835873     47987394   22229415       26207191         0   22540586 135,800,459.00
+Northeast      36262590     65326474   14031168       24698097  13712005   32293733 186,324,067.00
+South            409091      9307025    3552055       65258121  33049858   33087031 144,663,181.00
+Southeast      10826333     59669118          0       54178543  21005539   17491703 163,171,236.00
+West           13365025     37804709   62302115       12129045   6791008  137551280 269,943,182.00
+Total General  77698912    220094720  102114753      182470997  74558410  242964333 899,902,125.00
+
+
+```
+
+A continuación se presenta la **tabla dinámica** con el total de ventas (`Total Sales` expresado en USD) desglosado por **Región** y **Retailer**:
+
+| Región | Amazon | Foot Locker | Kohl's | Sports Direct | Walmart | West Gear | Total General |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| **Midwest** | $16,835,873 | $47,987,394 | $22,229,415 | $26,207,191 | $0 | $22,540,586 | **$135,800,459** |
+| **Northeast** | $36,262,590 | $65,326,474 | $14,031,168 | $24,698,097 | $13,712,005 | $32,293,733 | **$186,324,067** |
+| **South** | $409,091 | $9,307,025 | $3,552,055 | $65,258,121 | $33,049,858 | $33,087,031 | **$144,663,181** |
+| **Southeast** | $10,826,333 | $59,669,118 | $0 | $54,178,543 | $21,005,539 | $17,491,703 | **$163,171,236** |
+| **West** | $13,365,025 | $37,804,709 | $62,302,115 | $12,129,045 | $6,791,008 | $137,551,280 | **$269,943,182** |
+| **Total General** | **$77,698,912** | **$220,094,720** | **$102,114,753** | **$182,470,997** | **$74,558,410** | **$242,964,333** | **$899,902,125** |
+
+---
+
+### Insights clave:
+
+* **Líder de Región:** La región **West** registra el mayor volumen de ventas con **$269,943,182**, impulsada principalmente por **West Gear** ($137.55M).
+* **Líder de Distribuidores:** **West Gear** ($242.96M) y **Foot Locker** ($220.09M) son los principales generadores de ingresos a nivel general.
+* **Segmentación geográfica:**
+* **Walmart** no registra ventas en la región *Midwest*.
+* **Kohl's** no registra ventas en la región *Southeast*.
+
+```python
+import pandas as pd
+
+filepath = 'Adidas US Sales Datasets.xlsx'
+df = pd.read_excel(filepath, skiprows=4)
+df = df.dropna(how='all', axis=1)
+
+# Check Operating Margin <= 0.10 (10%) or negative
+df['Operating Margin'] = pd.to_numeric(df['Operating Margin'], errors='coerce')
+
+low_margin = df[df['Operating Margin'] <= 0.10]
+print(f"Número de filas con Operating Margin <= 10%: {len(low_margin)}")
+
+print("\nFilas exactas encontradas:")
+print(low_margin[['Invoice Date', 'Retailer', 'Region', 'State', 'City', 'Product', 'Sales Method', 'Price per Unit', 'Units Sold', 'Total Sales', 'Operating Profit', 'Operating Margin']])
+
+
+```
+
+```text
+Número de filas con Operating Margin <= 10%: 4
+
+Filas exactas encontradas:
+    Invoice Date   Retailer Region       State           City          Product Sales Method  Price per Unit  Units Sold  Total Sales  Operating Profit  Operating Margin
+193   2021-01-29  West Gear   West  California  San Francisco  Women's Apparel       Outlet            70.0         775     542500.0           54250.0               0.1
+199   2021-02-04  West Gear   West  California  San Francisco  Women's Apparel       Outlet            70.0         700     490000.0           49000.0               0.1
+205   2021-02-10  West Gear   West  California  San Francisco  Women's Apparel       Outlet            70.0         775     542500.0           54250.0               0.1
+211   2021-02-16  West Gear   West  California  San Francisco  Women's Apparel       Outlet            70.0         800     560000.0           56000.0               0.1
+
+
+```
+
+```python
+# Let's inspect all rows under 15% margin or check minimum margin values across the dataset
+print("Top 15 lowest margins:")
+print(df.sort_values(by='Operating Margin')[['Invoice Date', 'Retailer', 'Region', 'State', 'City', 'Product', 'Sales Method', 'Price per Unit', 'Units Sold', 'Total Sales', 'Operating Profit', 'Operating Margin']].head(15))
+
+# Let's check stats for Women's Apparel in Outlet / West / San Francisco / West Gear
+san_fran_outlet = df[(df['City']=='San Francisco') & (df['Product']=="Women's Apparel") & (df['Sales Method']=='Outlet')]
+print("\nRegistros de Women's Apparel en Outlet en San Francisco:")
+print(san_fran_outlet[['Invoice Date', 'Retailer', 'Price per Unit', 'Units Sold', 'Total Sales', 'Operating Profit', 'Operating Margin']])
+
+# Summary of Operating Margin across Products and Sales Methods
+print("\nMargen operativo promedio por Producto y Método de Venta:")
+print(df.groupby(['Product', 'Sales Method'])['Operating Margin'].agg(['min', 'mean', 'max']))
+
+
+```
+
+```text
+Top 15 lowest margins:
+     Invoice Date       Retailer Region       State           City                  Product Sales Method  Price per Unit  Units Sold  Total Sales  Operating Profit  Operating Margin
+199    2021-02-04      West Gear   West  California  San Francisco          Women's Apparel       Outlet            70.0         700     490000.0          49000.00              0.10
+211    2021-02-16      West Gear   West  California  San Francisco          Women's Apparel       Outlet            70.0         800     560000.0          56000.00              0.10
+205    2021-02-10      West Gear   West  California  San Francisco          Women's Apparel       Outlet            70.0         775     542500.0          54250.00              0.10
+193    2021-01-29      West Gear   West  California  San Francisco          Women's Apparel       Outlet            70.0         775     542500.0          54250.00              0.10
+7975   2021-02-04      West Gear   West  California  San Francisco          Women's Apparel       Outlet            46.0         224      10304.0           1236.48              0.12
+1339   2021-09-11        Walmart   West      Hawaii       Honolulu            Men's Apparel       Outlet            75.0         350     262500.0          39375.00              0.15
+1303   2021-03-09    Foot Locker   West      Hawaii       Honolulu            Men's Apparel       Outlet            60.0         125      75000.0          11250.00              0.15
+1321   2021-06-10    Foot Locker   West      Hawaii       Honolulu            Men's Apparel       Outlet            85.0         350     297500.0          44625.00              0.15
+1345   2021-10-10        Walmart   West      Hawaii       Honolulu            Men's Apparel       Outlet            65.0         250     162500.0          24375.00              0.15
+1357   2021-12-09  Sports Direct   West      Hawaii       Honolulu            Men's Apparel       Outlet            90.0         425     382500.0          57375.00              0.15
+1351   2021-11-10        Walmart   West      Hawaii       Honolulu            Men's Apparel       Outlet            85.0         375     318750.0          47812.50              0.15
+189    2021-01-25      West Gear   West  California  San Francisco  Men's Athletic Footwear       Outlet            60.0         925     555000.0          83250.00              0.15
+1297   2021-02-10    Foot Locker   West      Hawaii       Honolulu            Men's Apparel       Outlet            50.0         150      75000.0          11250.00              0.15
+1333   2021-08-10        Walmart   West      Hawaii       Honolulu            Men's Apparel       Outlet            70.0         525     367500.0          55125.00              0.15
+1315   2021-05-11    Foot Locker   West      Hawaii       Honolulu            Men's Apparel       Outlet            60.0         175     105000.0          15750.00              0.15
+
+Registros de Women's Apparel en Outlet en San Francisco:
+     Invoice Date   Retailer  Price per Unit  Units Sold  Total Sales  Operating Profit  Operating Margin
+145    2020-11-06  West Gear            50.0         775     387500.0          58125.00              0.15
+151    2020-11-12  West Gear            50.0         700     350000.0          52500.00              0.15
+157    2020-12-24  West Gear            60.0         700     420000.0          63000.00              0.15
+163    2020-12-30  West Gear            80.0         700     560000.0          84000.00              0.15
+169    2021-01-05  West Gear            80.0         725     580000.0         116000.00              0.20
+175    2021-01-11  West Gear            80.0         875     700000.0         140000.00              0.20
+181    2021-01-17  West Gear            80.0         775     620000.0          93000.00              0.15
+187    2021-01-23  West Gear            80.0         725     580000.0          87000.00              0.15
+193    2021-01-29  West Gear            70.0         775     542500.0          54250.00              0.10
+199    2021-02-04  West Gear            70.0         700     490000.0          49000.00              0.10
+205    2021-02-10  West Gear            70.0         775     542500.0          54250.00              0.10
+211    2021-02-16  West Gear            70.0         800     560000.0          56000.00              0.10
+7921   2020-11-06  West Gear            36.0         233       8388.0           1761.48              0.21
+7927   2020-11-12  West Gear            33.0         210       6930.0           1524.60              0.22
+7933   2020-12-24  West Gear            41.0         245      10045.0           2009.00              0.20
+7939   2020-12-30  West Gear            62.0         245      15190.0           2886.10              0.19
+7945   2021-01-05  West Gear            58.0         225      13050.0           3001.50              0.23
+7951   2021-01-11  West Gear            60.0         306      18360.0           4773.60              0.26
+7957   2021-01-17  West Gear            56.0         264      14784.0           2808.96              0.19
+7963   2021-01-23  West Gear            60.0         254      15240.0           3352.80              0.22
+7969   2021-01-29  West Gear            51.0         264      13464.0           2019.60              0.15
+7975   2021-02-04  West Gear            46.0         224      10304.0           1236.48              0.12
+7981   2021-02-10  West Gear            56.0         256      14336.0           2150.40              0.15
+7987   2021-02-16  West Gear            50.0         256      12800.0           2176.00              0.17
+
+Margen operativo promedio por Producto y Método de Venta:
+                                         min      mean   max
+Product                   Sales Method                      
+Men's Apparel             In-store      0.20  0.356014  0.65
+                          Online        0.25  0.451722  0.77
+                          Outlet        0.15  0.384044  0.66
+Men's Athletic Footwear   In-store      0.20  0.344983  0.45
+                          Online        0.25  0.444216  0.65
+                          Outlet        0.15  0.368653  0.55
+Men's Street Footwear     In-store      0.30  0.383621  0.50
+                          Online        0.30  0.485172  0.70
+                          Outlet        0.25  0.418889  0.62
+Women's Apparel           In-store      0.15  0.376724  0.55
+                          Online        0.21  0.487951  0.80
+                          Outlet        0.10  0.403002  0.72
+Women's Athletic Footwear In-store      0.25  0.342759  0.45
+                          Online        0.30  0.464435  0.75
+                          Outlet        0.25  0.406514  0.67
+Women's Street Footwear   In-store      0.25  0.332586  0.50
+                          Online        0.25  0.451387  0.64
+                          Outlet        0.25  0.388211  0.56
+
+
+```
+
+### 1. Registros Identificados con Margen Operativo ≤ 10%
+
+En todo el dataset **no existen filas con margen operativo negativo**. El valor mínimo absoluto registrado es de exactamente **10% (0.10)**, el cual se presenta en únicamente **4 transacciones**:
+
+| Fila (Origen) | Fecha | Retailer | Región | Estado | Ciudad | Producto | Método de Venta | Precio Unitario | Unidades Vendidas | Total Sales | Operating Profit | Operating Margin |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| **#193** | 2021-01-29 | West Gear | West | California | San Francisco | Women's Apparel | Outlet | $70.00 | 775 | $542,500.00 | $54,250.00 | **10%** |
+| **#199** | 2021-02-04 | West Gear | West | California | San Francisco | Women me Apparel | Outlet | $70.00 | 700 | $490,000.00 | $49,000.00 | **10%** |
+| **#205** | 2021-02-10 | West Gear | West | California | San Francisco | Women's Apparel | Outlet | $70.00 | 775 | $542,500.00 | $54,250.00 | **10%** |
+| **#211** | 2021-02-16 | West Gear | West | California | San Francisco | Women's Apparel | Outlet | $70.00 | 800 | $560,000.00 | $56,000.00 | **10%** |
+
+---
+
+### 2. Análisis de Concentración de los Casos
+
+Estos casos se concentran en un punto extremadamente específico:
+
+* **Producto:** Ropa femenina (*Women's Apparel*).
+* **Región / Ubicación:** Región **West** (específicamente en San Francisco, California).
+* **Retailer:** **West Gear**.
+* **Método de Venta:** **Outlet**.
+* **Período de Tiempo:** Entre finales de enero de 2021 y mediados de febrero de 2021.
+
+---
+
+### 3. ¿Por qué podría estar pasando?
+
+1. **Estrategia de Liquidación / Descuentos de Temporada:**
+Al tratarse del canal de ventas **Outlet** a principios de año (enero-febrero), es común aplicar grandes descuentos para rematar inventario sobrante de la temporada anterior (*Women's Apparel*), sacrificando margen operativo para liberar espacio en almacén.
+2. **Costos Operativos Específicos de la Región (San Francisco):**
+San Francisco es una de las ciudades con costos logísticos, de arrendamiento y mano de obra más altos en EE. UU. Al combinar un canal de liquidación (*Outlet*) en una plaza con altos costos fijos operacionales, la ganancia neta por unidad disminuye significativamente.
+3. **Ajuste Temporal de Precios / Promociones Específicas:**
+En las fechas previas (diciembre 2020 a inicios de enero 2021), West Gear vendía este mismo producto a $80 USD/unidad con márgenes del 15% al 20%. A finales de enero se redujo el precio unitario a $70 USD en grandes volúmenes de volumen (700-800 unidades), absorbiendo un margen operativo mínimo del 10%.
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load data
+filepath = 'Adidas US Sales Datasets.xlsx'
+df = pd.read_excel(filepath, skiprows=4)
+df = df.dropna(how='all', axis=1)
+
+# Ensure numeric types
+df['Units Sold'] = pd.to_numeric(df['Units Sold'], errors='coerce')
+df['Operating Margin'] = pd.to_numeric(df['Operating Margin'], errors='coerce')
+df['Operating Profit'] = pd.to_numeric(df['Operating Profit'], errors='coerce')
+df['Total Sales'] = pd.to_numeric(df['Total Sales'], errors='coerce')
+
+# Summary statistics by Sales Method
+summary = df.groupby('Sales Method').agg(
+    Total_Units=('Units Sold', 'sum'),
+    Avg_Units_per_Order=('Units Sold', 'mean'),
+    Avg_Operating_Margin=('Operating Margin', 'mean'),
+    Median_Operating_Margin=('Operating Margin', 'median'),
+    Total_Profit=('Operating Profit', 'sum'),
+    Total_Sales=('Total Sales', 'sum')
+).reset_index()
+
+summary['Profit_Margin_Global'] = summary['Total_Profit'] / summary['Total_Sales']
+print(summary)
+
+# Set style
+sns.set_theme(style="whitegrid")
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+# Plot 1: Boxplot of Operating Margin by Sales Method
+sns.boxplot(ax=axes[0], data=df, x='Sales Method', y='Operating Margin', palette='Set2')
+axes[0].set_title('Distribución del Margen Operativo por Método de Venta', fontsize=12, fontweight='bold')
+axes[0].set_xlabel('Método de Venta', fontsize=10)
+axes[0].set_ylabel('Margen Operativo (%)', fontsize=10)
+axes[0].set_yticklabels(['{:,.0%}'.format(x) for x in axes[0].get_yticks()])
+
+# Plot 2: Scatter / Regplot of Units Sold vs Operating Margin colored by Sales Method
+sns.scatterplot(
+    ax=axes[1],
+    data=df,
+    x='Units Sold',
+    y='Operating Margin',
+    hue='Sales Method',
+    alpha=0.5,
+    palette='Set2'
+)
+axes[1].set_title('Unidades Vendidas vs Margen Operativo por Canal', fontsize=12, fontweight='bold')
+axes[1].set_xlabel('Unidades Vendidas por Transacción', fontsize=10)
+axes[1].set_ylabel('Margen Operativo (%)', fontsize=10)
+axes[1].set_yticklabels(['{:,.0%}'.format(x) for x in axes[1].get_yticks()])
+
+plt.tight_layout()
+plt.savefig('units_vs_margin_by_sales_method.png', dpi=300)
+plt.show()
+
+
+```
+
+```text
+  Sales Method  Total_Units  Avg_Units_per_Order  Avg_Operating_Margin  Median_Operating_Margin  Total_Profit  Total_Sales  Profit_Margin_Global
+0     In-store       689990           396.545977              0.356121                     0.35  1.275913e+08  356643750.0              0.357756
+1       Online       939093           192.082839              0.464152                     0.47  9.655518e+07  247672882.0              0.389850
+2       Outlet       849778           281.476648              0.394876                     0.40  1.079883e+08  295585493.0              0.365337
+has vm saved
+
+
+```
+
+```python
+import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.ticker as mtick
+import seaborn as sns
+
+filepath = 'Adidas US Sales Datasets.xlsx'
+df = pd.read_excel(filepath, skiprows=4)
+df = df.dropna(how='all', axis=1)
+
+df['Units Sold'] = pd.to_numeric(df['Units Sold'], errors='coerce')
+df['Operating Margin'] = pd.to_numeric(df['Operating Margin'], errors='coerce')
+
+sns.set_theme(style="whitegrid")
+fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+
+# Subplot 1: Boxplot
+sns.boxplot(ax=axes[0], data=df, x='Sales Method', y='Operating Margin', palette='Set2')
+axes[0].set_title('Distribución del Margen Operativo por Canal de Venta', fontsize=12, fontweight='bold')
+axes[0].set_xlabel('Método de Venta', fontsize=11)
+axes[0].set_ylabel('Margen Operativo', fontsize=11)
+axes[0].yaxis.set_major_formatter(mtick.PercentFormatter(1.0))
+
+# Subplot 2: Scatter plot
+sns.scatterplot(
+    ax=axes[1],
+    data=df,
+    x='Units Sold',
+    y='Operating Margin',
+    hue='Sales Method',
+    alpha=0.6,
+    palette='Set2',
+    s=40
+)
+axes[1].set_title('Unidades Vendidas vs. Margen Operativo por Transacción', fontsize=12, fontweight='bold')
+axes[1].set_xlabel('Unidades Vendidas por Transacción', fontsize=11)
+axes[1].set_ylabel('Margen Operativo', fontsize=11)
+axes[1].yaxis.set_major_formatter(mtick.PercentFormatter(1.0))
+
+plt.tight_layout()
+plt.savefig('units_vs_margin_analysis.png', dpi=300)
+plt.close()
+
+
+```
+
+```python
+stats = df.groupby('Sales Method').agg(
+    Transacciones=('Operating Margin', 'count'),
+    Unidades_Totales=('Units Sold', 'sum'),
+    Promedio_Unidades=('Units Sold', 'mean'),
+    Margen_Promedio=('Operating Margin', 'mean'),
+    Margen_Mediana=('Operating Margin', 'median'),
+    Margen_Min=('Operating Margin', 'min'),
+    Margen_Max=('Operating Margin', 'max')
+).reset_index()
+
+stats['Margen_Promedio'] = stats['Margen_Promedio'].map('{:.1%}'.format)
+stats['Margen_Mediana'] = stats['Margen_Mediana'].map('{:.1%}'.format)
+stats['Margen_Min'] = stats['Margen_Min'].map('{:.1%}'.format)
+stats['Margen_Max'] = stats['Margen_Max'].map('{:.1%}'.format)
+stats['Promedio_Unidades'] = stats['Promedio_Unidades'].map('{:,.1f}'.format)
+stats['Unidades_Totales'] = stats['Unidades_Totales'].map('{:,.0f}'.format)
+
+print(stats)
+
+
+```
+
+```text
+  Sales Method  Transacciones Unidades_Totales Promedio_Unidades Margen_Promedio Margen_Mediana Margen_Min Margen_Max
+0     In-store           1740          689,990             396.5           35.6%          35.0%      15.0%      65.0%
+1       Online           4889          939,093             192.1           46.4%          47.0%      21.0%      80.0%
+2       Outlet           3019          849,778             281.5           39.5%          40.0%      10.0%      72.0%
+
+
+```
+
+El canal **In-store** es el menos rentable en términos de margen operativo porcentual (35.6% promedio), mientras que el canal **Online** resulta ser el más rentable (46.4% promedio).
+
+**Resumen por Canal de Venta**
+
+| Método de Venta | Transacciones | Unidades Totales | Prom. Unidades / Transacción | Margen Promedio | Margen Mediano | Rango de Margen (Mín - Máx) |
+| --- | --- | --- | --- | --- | --- | --- |
+| **In-store** | 1,740 | 689,990 | 396.5 | **35.6%** | 35.0% | 15.0% - 65.0% |
+| **Outlet** | 3,019 | 849,778 | 281.5 | **39.5%** | 40.0% | 10.0% - 72.0% |
+| **Online** | 4,889 | 939,093 | 192.1 | **46.4%** | 47.0% | 21.0% - 80.0% |
+
+**Hallazgos Clave del Análisis**
+
+* **In-store (Menor margen porcentual):** Concentra las transacciones con mayor número de unidades por orden (promedio de 396.5 unidades), pero genera el menor retorno relativo debido a los altos costos fijos asociados al mantenimiento del punto de venta físico.
+* **Online (Canal más eficiente):** Presenta pedidos más pequeños por transacción (192.1 unidades en promedio), pero alcanza márgenes de hasta el 80% al minimizar costos intermedios y de infraestructura física.
+* **Outlet (Canal con mayor variabilidad):** Aunque su margen promedio (39.5%) es superior al canal físico tradicional (*In-store*), concentra los valores atípicos más bajos de todo el dataset (caídas hasta del 10%), reflejando operaciones puntuales de liquidación masiva de inventario a precio de remate.
