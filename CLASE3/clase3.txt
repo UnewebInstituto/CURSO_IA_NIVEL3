@@ -1,0 +1,31 @@
+https://www.elespanol.com/omicrono/20260721/demis-hassabis-ceo-google-deepmind-hacer-carrera-no-redundante-hace-veces-mejor-ia/1003744325543_0.amp.html
+
+prompt1:
+
+Asume el rol de experto en estadísticas y administración de empresas, toma el archivo anexo y Usando tablas dinámicas (o fórmulas SUMIFS/AVERAGEIFS), calcular para 3 trimestres consecutivos (ej.: Q1, Q2 
+y Q3 de un mismo año): Ventas totales, Ganancia total (Profit), Margen de ganancia (Profit / Sales), Ticket promedio por orden,  Categoría con mayor venta, y Variación % respecto al trimestre anterior
+
+prompt 2
+Para el Q1 (Cuartil 1) desarrolla un informe cuyo contexto explique que fenomenos se observaron para este período respecto a las ventas y una posible causa.
+
+prompt 3
+Para el Q2 (Cuartil 2) desarrolla un informe cuyo contexto explique que fenomenos se observaron para este período respecto a las ventas y una posible causa.
+
+prompt 3
+Para el Q3 (Cuartil 3) desarrolla un informe cuyo contexto explique que fenomenos se observaron para este período respecto a las ventas y una posible causa.
+
+notebookLM
+Análisis:
+https://notebook.google.com/notebook/31dc3eb8-f3d4-49d9-af4c-6a97d3d48d29
+
+
+Mapa mental obtenido:
+https://notebook.google.com/notebook/31dc3eb8-f3d4-49d9-af4c-6a97d3d48d29/artifact/7391fc65-6705-4445-9681-ee61b8789407?utm_source=nlm_web_share&utm_medium=google_oo&utm_campaign=art_share_1&utm_content=&utm_smc=nlm_web_share_google_oo_art_share_1_
+
+
+Resumen de Audio:
+https://notebook.google.com/notebook/31dc3eb8-f3d4-49d9-af4c-6a97d3d48d29/artifact/5212060a-0984-4c97-ac1d-ef7ec803107c?utm_source=nlm_web_share&utm_medium=google_oo&utm_campaign=art_share_1&utm_content=&utm_smc=nlm_web_share_google_oo_art_share_1_
+
+
+Video:
+https://notebook.google.com/notebook/31dc3eb8-f3d4-49d9-af4c-6a97d3d48d29/artifact/48c21599-461f-4ccc-b600-af728384060b?utm_source=nlm_web_share&utm_medium=google_oo&utm_campaign=art_share_1&utm_content=&utm_smc=nlm_web_share_google_oo_art_share_1_
