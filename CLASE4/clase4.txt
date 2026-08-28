@@ -1,0 +1,10 @@
+https://teachablemachine.withgoogle.com/
+
+
+Prompt para procesar Sales Data Sample 
+Toma el archivo anexo, a fin de verificar que la columna de fecha esté en formato fecha (no texto).
+Eliminar filas con valores nulos en columnas clave (ventas, fecha, cantidad).
+Crear una columna auxiliar Semana (usando WEEKNUM() o agrupando por fecha) para poder comparar "esta semana" vs. "semana anterior".
+Crear un archivo "Resumen" con una tabla dinámica que calcule, por semana: ventas totales, ticket promedio y unidades vendidas
+
+Acceder a través de https://datastudio.google.com/navigation/reporting
