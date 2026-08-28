@@ -1,0 +1,23 @@
+enlace de presentación con indicadores de prueba
+
+https://datastudio.google.com/reporting/c498d308-a37c-4672-b696-f7ae4736685c
+
+presentación de Alexander
+https://datastudio.google.com/reporting/2830cb5f-fff5-47a9-8d8a-acb391a2185e
+
+presentación de Paul
+
+
+Respuesta al prompt:
+En la semana 22 de 2005, las ventas aumentaron un 82,5% respecto a la semana previa, alcanzando $93.496,78 frente a los $51.233,18 del período anterior. Este crecimiento respondió directamente a un mayor volumen de actividad, al duplicarse la cantidad de pedidos de 2 a 4 y subir las unidades vendidas de 607 a 883. Por su parte, el monto promedio cobrado por pedido se redujo levemente de $25.616,59 a $23.374,20. Estos datos son relevantes porque confirman que el repunte total en la facturación fue impulsado exclusivamente por la captación de más operaciones y piezas colocadas, y no por un incremento en el valor de cada transacción.
+
+
+
+prompt 2:
+A partir del archivo anexo, genera un archivo excel, que incluya una columna de identificada como "Alerta" donde se indique el mansaje "ALERTA" si la variación en la columna "Variación WoW (%)" cae más de 15%.
+
+prompt 3:
+A partir del archivo anexo, genera un archivo excel, que incluya una columna identificada como "Alerta" donde se indique el mansaje "ALERTA" si la variación en la columna "Variación WoW (%)" cae más de 15%. 
+Añade otra columna identificada como "Detalle", donde se describa para 
+cada caso de alerta el siguiente texto "Pasó del [valor anterior] a [valor actual] e indica la causa más probable. Si no hay evidencia suficiente para
+la causa dilo explicitamente en vez de inventarla.
